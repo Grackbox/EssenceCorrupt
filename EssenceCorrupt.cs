@@ -15,6 +15,9 @@ public class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
 {
     private const int MaxDepth = 6;
 
+    private readonly System.Diagnostics.Stopwatch _sinceClick = System.Diagnostics.Stopwatch.StartNew();
+
+
     private Vector2 WindowOffset
     {
         get
@@ -30,12 +33,19 @@ public class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
     {
         if (!GameController.InGame || GameController.Player == null) return;
 
-        var pressed = Settings.Hotkey.PressedOnce();
+        // A first press always clicks; with Hold to repeat on, holding the key
+        // clicks again every RepeatInterval ms. Diagnostics only on a real press.
+        var firstPress = Settings.Hotkey.PressedOnce();
+        var repeat = !firstPress
+                     && Settings.HoldToRepeat
+                     && Settings.Hotkey.IsPressed()
+                     && _sinceClick.ElapsedMilliseconds >= Settings.RepeatInterval.Value;
+        var pressed = firstPress || repeat;
 
         var label = FindNearestEssenceLabel();
         if (label == null)
         {
-            if (pressed) WriteDiagnostics("no essence label found");
+            if (firstPress) WriteDiagnostics("no essence label found");
             return;
         }
 
@@ -53,11 +63,12 @@ public class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
 
         if (button == null)
         {
-            WriteDiagnostics("label found, Vaal Orb button not found", root);
+            if (firstPress) WriteDiagnostics("label found, Vaal Orb button not found", root);
             return;
         }
 
         Click(button.GetClientRect());
+        _sinceClick.Restart();
     }
 
     private LabelOnGround FindNearestEssenceLabel()

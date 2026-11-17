@@ -18,6 +18,12 @@ public class EssenceCorruptSettings : ISettings
     [Menu("Click delay (ms)")]
     public RangeNode<int> ClickDelay { get; set; } = new RangeNode<int>(30, 5, 200);
 
+    [Menu("Hold to repeat", "While the hotkey is held, keep clicking like PickIt does")]
+    public ToggleNode HoldToRepeat { get; set; } = new ToggleNode(false);
+
+    [Menu("Repeat interval (ms)", "Time between clicks while the hotkey is held")]
+    public RangeNode<int> RepeatInterval { get; set; } = new RangeNode<int>(250, 50, 1000);
+
     [Menu("Return cursor", "Move the cursor back to where it was after the click")]
     public ToggleNode ReturnCursor { get; set; } = new ToggleNode(true);
 
