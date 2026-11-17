@@ -63,6 +63,24 @@ public partial class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
 
         if (Settings.Debug) DrawDebug(root);
 
+        // An essence from the "Do not corrupt" list: open the monolith instead.
+        var skip = FindNoCorruptEssence(root);
+        if (skip != null)
+        {
+            var header = OpenTarget(root);
+            if (Settings.Highlight)
+            {
+                var hr = header.GetClientRect();
+                Graphics.DrawFrame(hr, Color.Orange, 2);
+                Graphics.DrawText($"open: {skip}", new Vector2(hr.Center.X, hr.Bottom + 2), Color.Orange, FontAlign.Center);
+            }
+
+            if (!pressed) return;
+            Click(header.GetClientRect());
+            _sinceClick.Restart();
+            return;
+        }
+
         var button = FindVaalButton(root);
 
         if (button != null && Settings.Highlight)
@@ -78,6 +96,44 @@ public partial class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
 
         Click(button.GetClientRect());
         _sinceClick.Restart();
+    }
+
+    private List<string> NoCorruptList() =>
+        (Settings.NoCorruptEssences.Value ?? "")
+        .Split(new[] { ',', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+        .Select(s => s.Trim())
+        .Where(s => s.Length > 0)
+        .ToList();
+
+    // Returns the first list entry found in the label's text, or null.
+    private string FindNoCorruptEssence(Element root)
+    {
+        var list = NoCorruptList();
+        if (list.Count == 0) return null;
+
+        var texts = new List<string>();
+        CollectTexts(root, 0, texts);
+        return list.FirstOrDefault(entry =>
+            texts.Any(t => t.Contains(entry, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    private static void CollectTexts(Element e, int depth, List<string> into)
+    {
+        if (depth > MaxDepth || e == null) return;
+        foreach (var c in e.Children)
+        {
+            if (c == null || c.Address == 0 || !c.IsVisible) continue;
+            var t = c.Text;
+            if (!string.IsNullOrEmpty(t)) into.Add(t);
+            CollectTexts(c, depth + 1, into);
+        }
+    }
+
+    // Clicking the label's title bar opens the monolith.
+    private static Element OpenTarget(Element root)
+    {
+        var header = root.GetChildAtIndex(0);
+        return header != null && header.Address != 0 && header.IsVisible ? header : root;
     }
 
     private LabelOnGround FindNearestEssenceLabel()

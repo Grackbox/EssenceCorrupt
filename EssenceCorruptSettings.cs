@@ -19,6 +19,9 @@ public class EssenceCorruptSettings : ISettings
     [Menu("Click delay (ms)")]
     public RangeNode<int> ClickDelay { get; set; } = new RangeNode<int>(30, 5, 200);
 
+    [Menu("Do not corrupt", "Comma-separated essence names. If the label has one, the hotkey opens the monolith instead of using a Vaal Orb. Part of a name works too: 'Contempt' matches every tier")]
+    public TextNode NoCorruptEssences { get; set; } = new TextNode("Deafening Essence of Contempt");
+
     [Menu("Hold to repeat", "While the hotkey is held, keep clicking like PickIt does")]
     public ToggleNode HoldToRepeat { get; set; } = new ToggleNode(false);
 
