@@ -22,7 +22,10 @@ public class EssenceCorruptSettings : ISettings
     [Menu("Do not corrupt", "Comma-separated essence names. If the label has one, the hotkey opens the monolith instead of using a Vaal Orb. Part of a name works too: 'Contempt' matches every tier")]
     public TextNode NoCorruptEssences { get; set; } = new TextNode("Deafening Essence of Contempt");
 
-    [Menu("Red frame", "Red frame around labels that have an essence from the Do not corrupt list")]
+    [Menu("Alert essences", "Comma-separated essence names for the red frame and sound; separate from Do not corrupt. Part of a name works too")]
+    public TextNode AlertEssences { get; set; } = new TextNode("Deafening Essence of Contempt");
+
+    [Menu("Red frame", "Red frame around labels that have an essence from the Alert essences list")]
     public ToggleNode RedFrame { get; set; } = new ToggleNode(true);
 
     [Menu("Alert sound", "Play a sound when such a label is seen (once per monolith)")]

@@ -44,10 +44,11 @@ public partial class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
     private readonly HashSet<long> _alerted = new HashSet<long>();
 
     // Red frame around every visible label that has an essence from the
-    // "Do not corrupt" list, and a sound the first time each one is seen.
+    // alert list, and a sound the first time each one is seen.
     private void RenderNoCorruptAlerts()
     {
-        if (NoCorruptList().Count == 0) return;
+        var alertList = SplitList(Settings.AlertEssences.Value);
+        if (alertList.Count == 0) return;
 
         foreach (var l in AllLabels())
         {
@@ -56,7 +57,7 @@ public partial class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
             if (e.Path.Contains("Legion", StringComparison.OrdinalIgnoreCase)) continue;
             var root = l.Label;
             if (root == null || !root.IsVisible) continue;
-            if (FindNoCorruptEssence(root) == null) continue;
+            if (FindListedEssence(root, alertList) == null) continue;
 
             if (Settings.RedFrame)
                 Graphics.DrawFrame(root.GetClientRect(), Color.Red, 3);
@@ -126,17 +127,19 @@ public partial class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
         _sinceClick.Restart();
     }
 
-    private List<string> NoCorruptList() =>
-        (Settings.NoCorruptEssences.Value ?? "")
+    private static List<string> SplitList(string value) =>
+        (value ?? "")
         .Split(new[] { ',', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries)
         .Select(s => s.Trim())
         .Where(s => s.Length > 0)
         .ToList();
 
+    private string FindNoCorruptEssence(Element root) =>
+        FindListedEssence(root, SplitList(Settings.NoCorruptEssences.Value));
+
     // Returns the first list entry found in the label's text, or null.
-    private string FindNoCorruptEssence(Element root)
+    private static string FindListedEssence(Element root, List<string> list)
     {
-        var list = NoCorruptList();
         if (list.Count == 0) return null;
 
         var texts = new List<string>();
