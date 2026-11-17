@@ -37,7 +37,36 @@ public partial class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
         }
 
         RenderInventory();
+        RenderNoCorruptAlerts();
         RenderEssence();
+    }
+
+    private readonly HashSet<long> _alerted = new HashSet<long>();
+
+    // Red frame around every visible label that has an essence from the
+    // "Do not corrupt" list, and a sound the first time each one is seen.
+    private void RenderNoCorruptAlerts()
+    {
+        if (NoCorruptList().Count == 0) return;
+
+        foreach (var l in AllLabels())
+        {
+            var e = l.ItemOnGround;
+            if (e?.Path == null || !e.Path.Contains("Monolith", StringComparison.OrdinalIgnoreCase)) continue;
+            if (e.Path.Contains("Legion", StringComparison.OrdinalIgnoreCase)) continue;
+            var root = l.Label;
+            if (root == null || !root.IsVisible) continue;
+            if (FindNoCorruptEssence(root) == null) continue;
+
+            if (Settings.RedFrame)
+                Graphics.DrawFrame(root.GetClientRect(), Color.Red, 3);
+
+            if (Settings.AlertSound && _alerted.Add(e.Id))
+            {
+                try { GameController.SoundController.PlaySound(Settings.AlertSoundName.Value); }
+                catch (Exception ex) { LogError($"EssenceCorrupt: cannot play sound '{Settings.AlertSoundName.Value}': {ex.Message}", 5); }
+            }
+        }
     }
 
     private void RenderEssence()
@@ -70,9 +99,8 @@ public partial class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
             var header = OpenTarget(root);
             if (Settings.Highlight)
             {
-                var hr = header.GetClientRect();
-                Graphics.DrawFrame(hr, Color.Orange, 2);
-                Graphics.DrawText($"open: {skip}", new Vector2(hr.Center.X, hr.Bottom + 2), Color.Orange, FontAlign.Center);
+                var rr = root.GetClientRect();
+                Graphics.DrawText($"open: {skip}", new Vector2(rr.Center.X, rr.Bottom + 4), Color.Red, FontAlign.Center);
             }
 
             if (!pressed) return;

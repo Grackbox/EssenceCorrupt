@@ -184,5 +184,9 @@ public partial class EssenceCorrupt
             Settings.BannedCells.Clear();
     }
 
-    public override void AreaChange(AreaInstance area) => StopInventoryClicking();
+    public override void AreaChange(AreaInstance area)
+    {
+        StopInventoryClicking();
+        _alerted.Clear();
+    }
 }

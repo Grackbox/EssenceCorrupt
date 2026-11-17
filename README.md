@@ -10,6 +10,8 @@ PluginUpdater → **Add&Browse** → paste `https://github.com/Grackbox/EssenceC
 
 - **Hotkey** — clicks the Vaal Orb button of the nearest essence label.
 - **Do not corrupt** — comma-separated essence names (e.g. `Deafening Essence of Contempt, Misery`). If the label has one, the hotkey opens the monolith instead of using a Vaal Orb; part of a name matches every tier.
+- **Red frame** — red frame around labels that have an essence from that list.
+- **Alert sound** / **Alert sound name** — play a sound from the HUD's `Sounds` folder (name without `.wav`) the first time such a label is seen.
 - **Search distance** — how far from the player a monolith may be.
 - **Click delay (ms)** — raise it if the click lands before the cursor arrives.
 - **Hold to repeat** — while the hotkey is held, keep clicking (like PickIt).
