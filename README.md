@@ -16,3 +16,11 @@ PluginUpdater → **Add&Browse** → paste `https://github.com/Grackbox/EssenceC
 - **Return cursor** — move the cursor back after the click.
 - **Highlight button** — green frame around the button the plugin would click.
 - **Debug** — draws every element of the label; on a failed hotkey press writes `diag.txt` next to the plugin.
+
+## Inventory Ctrl+click
+
+- **Inventory: Ctrl+click hotkey** — with the inventory open, Ctrl+clicks every item that is not on a banned cell; press again to stop.
+- **Inventory: ban cell hotkey** — bans or unbans the inventory cell under the cursor.
+- **Inventory: delay between items (ms)**.
+- **Inventory: show banned cells** — red frames on banned cells.
+- A 12×5 grid at the bottom of the settings: checked cells are never clicked.

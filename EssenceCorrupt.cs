@@ -11,12 +11,11 @@ using Vector2 = System.Numerics.Vector2;
 
 namespace EssenceCorrupt;
 
-public class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
+public partial class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
 {
     private const int MaxDepth = 6;
 
     private readonly System.Diagnostics.Stopwatch _sinceClick = System.Diagnostics.Stopwatch.StartNew();
-
 
     private Vector2 WindowOffset
     {
@@ -31,8 +30,18 @@ public class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
 
     public override void Render()
     {
-        if (!GameController.InGame || GameController.Player == null) return;
+        if (!GameController.InGame || GameController.Player == null)
+        {
+            StopInventoryClicking();
+            return;
+        }
 
+        RenderInventory();
+        RenderEssence();
+    }
+
+    private void RenderEssence()
+    {
         // A first press always clicks; with Hold to repeat on, holding the key
         // clicks again every RepeatInterval ms. Diagnostics only on a real press.
         var firstPress = Settings.Hotkey.PressedOnce();
