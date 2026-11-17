@@ -97,15 +97,16 @@ public partial class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
         var skip = FindNoCorruptEssence(root);
         if (skip != null)
         {
-            var header = OpenTarget(root);
+            var openRect = OpenTarget(root);
             if (Settings.Highlight)
             {
                 var rr = root.GetClientRect();
+                Graphics.DrawFrame(openRect, Color.Red, 2);
                 Graphics.DrawText($"open: {skip}", new Vector2(rr.Center.X, rr.Bottom + 4), Color.Red, FontAlign.Center);
             }
 
             if (!pressed) return;
-            Click(header.GetClientRect());
+            Click(openRect);
             _sinceClick.Restart();
             return;
         }
@@ -160,11 +161,20 @@ public partial class EssenceCorrupt : BaseSettingsPlugin<EssenceCorruptSettings>
         }
     }
 
-    // Clicking the label's title bar opens the monolith.
-    private static Element OpenTarget(Element root)
+    // Clicking the label opens the monolith. Aim at its bottom line ("The monster
+    // is imprisoned..."): the title is often above the top of the screen. The
+    // point is kept inside the game window.
+    private RectangleF OpenTarget(Element root)
     {
-        var header = root.GetChildAtIndex(0);
-        return header != null && header.Address != 0 && header.IsVisible ? header : root;
+        var r = root.GetClientRect();
+        var win = GameController.Window.GetWindowRectangleTimeCache;
+        const float margin = 12;
+
+        var y = r.Bottom - Math.Min(18f, r.Height * 0.1f);
+        y = Math.Clamp(y, margin, win.Height - margin);
+        var x = Math.Clamp(r.Center.X, margin, win.Width - margin);
+
+        return new RectangleF(x - 10, y - 6, 20, 12);
     }
 
     private LabelOnGround FindNearestEssenceLabel()
