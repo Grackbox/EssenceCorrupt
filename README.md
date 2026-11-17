@@ -1,0 +1,16 @@
+# EssenceCorrupt
+
+ExileCore / PoEHelper plugin: press a hotkey to click the Vaal Orb button on the nearest essence monolith label.
+
+## Install
+
+PluginUpdater → **Add&Browse** → paste `https://github.com/Grackbox/EssenceCorrupt` → **Clone**, then restart the HUD and enable **EssenceCorrupt**.
+
+## Settings
+
+- **Hotkey** — clicks the Vaal Orb button of the nearest essence label.
+- **Search distance** — how far from the player a monolith may be.
+- **Click delay (ms)** — raise it if the click lands before the cursor arrives.
+- **Return cursor** — move the cursor back after the click.
+- **Highlight button** — green frame around the button the plugin would click.
+- **Debug** — draws every element of the label; on a failed hotkey press writes `diag.txt` next to the plugin.
